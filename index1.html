@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cardápio Digital SESC</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: "Poppins", sans-serif;
+      }
+
+      :root {
+        --sesc-green: #4a9b8e;
+        --sesc-orange: #f4a261;
+        --sesc-light-green: #5faaa0;
+        --sesc-dark-green: #3a8b7e;
+        --sesc-cream: #f5f5dc;
+      }
+
+      .sesc-gradient {
+        background: linear-gradient(
+          135deg,
+          var(--sesc-green) 0%,
+          var(--sesc-light-green) 100%
+        );
+      }
+
+      .sesc-orange-gradient {
+        background: linear-gradient(
+          135deg,
+          var(--sesc-orange) 0%,
+          #e6935c 100%
+        );
+      }
+
+      .curved-section {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .curved-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: var(--sesc-cream);
+        border-radius: 0 0 50% 50%;
+        transform: scale(2, 1);
+      }
+
+      .curved-bottom {
+        position: relative;
+        padding-bottom: 80px;
+      }
+
+      .curved-bottom::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: var(--sesc-cream);
+        border-radius: 50% 50% 0 0;
+        transform: scale(2, 1);
+      }
+
+      .protein-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .protein-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      }
+
+      .protein-card.orange {
+        background: linear-gradient(
+          135deg,
+          var(--sesc-orange) 0%,
+          #e6935c 100%
+        );
+        color: white;
+      }
+
+      .protein-card.green {
+        background: linear-gradient(
+          135deg,
+          var(--sesc-green) 0%,
+          var(--sesc-light-green) 100%
+        );
+        color: white;
+      }
+
+      .accent-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid var(--sesc-orange);
+      }
+
+      .snack-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .snack-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        border-color: var(--sesc-orange);
+      }
+
+      .filter-btn {
+        background: white;
+        color: var(--sesc-green);
+        border: 2px solid var(--sesc-green);
+        border-radius: 25px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .filter-btn:hover,
+      .filter-btn.active {
+        background: var(--sesc-green);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .chef-icon {
+        font-size: 3rem;
+        color: var(--sesc-cream);
+        opacity: 0.3;
+      }
+
+      .date-selector {
+        background: white;
+        border: 2px solid var(--sesc-green);
+        border-radius: 12px;
+        padding: 12px;
+        color: var(--sesc-green);
+        font-weight: 500;
+      }
+
+      .date-selector:focus {
+        outline: none;
+        border-color: var(--sesc-orange);
+        box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.1);
+      }
+
+      .week-btn {
+        background: var(--sesc-orange);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .week-btn:hover {
+        background: #e6935c;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(244, 162, 97, 0.3);
+      }
+
+      .loading-spinner {
+        border: 3px solid var(--sesc-cream);
+        border-top: 3px solid var(--sesc-orange);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .bounce-in {
+        animation: bounceIn 0.8s ease-out forwards;
+      }
+
+      @keyframes bounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
+        }
+        70% {
+          transform: scale(0.9);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .title-orange {
+        color: var(--sesc-orange);
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .title-green {
+        color: var(--sesc-green);
+        font-weight: 700;
+      }
+
+      .price-badge {
+        background: var(--sesc-orange);
+        color: white;
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .category-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-right: 15px;
+      }
+
+      .category-icon.salgado {
+        background: var(--sesc-orange);
+      }
+      .category-icon.bebida {
+        background: var(--sesc-green);
+      }
+      .category-icon.sobremesa {
+        background: #e91e63;
+      }
+      .category-icon.lanche {
+        background: #9c27b0;
+      }
+
+      .protein-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 15px;
+        margin-bottom: 15px;
+      }
+
+      @media (max-width: 768px) {
+        .protein-img {
+          height: 150px;
+        }
+      }
+
+      .section-divider {
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--sesc-orange) 0%,
+          var(--sesc-green) 100%
+        );
+        border-radius: 2px;
+        margin: 20px auto;
+        width: 80px;
+      }
+
+      .restaurant-info {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .sesc-logo {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+        body {
+          -webkit-print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body style="background-color: #f5f5dc">
+    <!-- Header -->
+    <header class="sesc-gradient text-white relative curved-bottom">
+      <div class="container mx-auto px-4 py-12 relative z-10">
+        <div class="text-center">
+          <div class="flex items-center justify-center mb-6">
+            <i class="fas fa-utensils chef-icon mr-4"></i>
+            <div>
+              <h1 class="text-5xl md:text-7xl font-black title-orange mb-2">
+                CARDÁPIO
+              </h1>
+              <div
+                class="bg-white text-sesc-green px-6 py-2 rounded-lg inline-block"
+              >
+                <span
+                  style="color: #f99f67"
+                  class="text-xl md:text-2xl font-bold"
+                  >DO DIA</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="sesc-orange-gradient text-white px-8 py-3 rounded-full inline-block text-xl font-bold mb-4"
+          >
+            <i class="fas fa-clock mr-2"></i>
+            ALMOÇO • 11h30 às 13h30
+          </div>
+
+          <p class="text-xl font-medium opacity-90">
+            <span id="currentDate"></span>
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-12">
+        <div class="loading-spinner mx-auto mb-4"></div>
+        <p class="text-xl font-medium" style="color: var(--sesc-green)">
+          Carregando cardápio delicioso...
+        </p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden text-center py-12">
+        <div
+          class="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-lg inline-block max-w-md"
+        >
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          <span class="font-medium"
+            >Erro ao carregar o cardápio. Tente novamente mais tarde.</span
+          >
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div id="mainContent" class="hidden">
+        <!-- Almoço do Dia -->
+        <section class="mb-16">
+          <div class="text-center mb-8">
+            <h2 class="text-4xl font-black title-green mb-4">
+              <i
+                class="fas fa-bowl-food mr-3"
+                style="color: var(--sesc-orange)"
+              ></i>
+              ALMOÇO DO DIA
+            </h2>
+            <div class="section-divider"></div>
+          </div>
+
+          <!-- Date Controls -->
+          <div
+            class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 no-print"
+          >
+            <input type="date" id="datePicker" class="date-selector" />
+            <button id="weekBtn" class="week-btn">
+              <i class="fas fa-calendar-week mr-2"></i>Ver Semana
+            </button>
+          </div>
+
+          <div id="almocoContent" class="space-y-8">
+            <!-- Almoço cards will be inserted here -->
+          </div>
+
+          <div id="noAlmocoMessage" class="hidden text-center py-12">
+            <div
+              class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-6 rounded-lg inline-block max-w-md"
+            >
+              <i class="fas fa-info-circle mr-2"></i>
+              <span class="font-medium text-lg"
+                >Almoço não disponível hoje</span
+              >
+            </div>
+          </div>
+        </section>
+
+        <!-- Lanches do Dia -->
+        <section class="mb-16">
+          <div class="text-center mb-8">
+            <h2 class="text-4xl font-black title-green mb-4">
+              <i
+                class="fas fa-cookie-bite mr-3"
+                style="color: var(--sesc-orange)"
+              ></i>
+              LANCHES DO DIA
+            </h2>
+            <div class="section-divider"></div>
+          </div>
+
+          <!-- Filter Buttons -->
+          <div
+            id="filterButtons"
+            class="flex flex-wrap justify-center gap-3 mb-8"
+          >
+            <button class="filter-btn active" data-filter="all">
+              <i class="fas fa-th-large mr-2"></i>Todos
+            </button>
+          </div>
+
+          <div id="lanchesContent" class="space-y-12">
+            <!-- Lanches sections will be inserted here -->
+          </div>
+
+          <div id="noLanchesMessage" class="hidden text-center py-12">
+            <div
+              class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-6 rounded-lg inline-block max-w-md"
+            >
+              <i class="fas fa-info-circle mr-2"></i>
+              <span class="font-medium text-lg"
+                >Nenhum lanche disponível hoje</span
+              >
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="sesc-gradient text-white py-12 mt-16 curved-section">
+      <div class="container mx-auto px-4 text-center relative z-10">
+        <div class="restaurant-info max-w-md mx-auto mb-8">
+          <h3 class="text-2xl font-bold title-green mb-2">
+            Restaurante SESC Centro
+          </h3>
+          <p class="text-gray-600 mb-2">
+            <i class="fas fa-map-marker-alt mr-2"></i>
+            Rua Doutor Araújo Filho, 947 - Centro
+          </p>
+          <p class="text-sm text-gray-500">*sujeito a alterações</p>
+        </div>
+
+        <div class="sesc-logo mb-4">SESC</div>
+
+        <div class="flex items-center justify-center mb-4">
+          <i class="fas fa-heart mr-2" style="color: var(--sesc-orange)"></i>
+          <span class="text-lg font-medium">Feito com carinho para você</span>
+        </div>
+
+        <p class="text-sm opacity-75">SESC - Serviço Social do Comércio</p>
+
+        <div class="mt-6 text-sm opacity-60">
+          Atualizado automaticamente • <span id="lastUpdate"></span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Configuration
+      const SHEET_ID = "1IhNTuKhJVGSxE8jgTJZR3dXQloRFE2DC3T-B9Y9vhP4";
+      const BASE_URL = "https://opensheet.elk.sh";
+
+      // Global state
+      let almocoData = [];
+      let lanchesData = [];
+      let currentFilter = "all";
+      let selectedDate = getTodayString();
+      let showWeek = false;
+
+      // Utility functions
+      function formatDate(date) {
+        return date.toLocaleDateString("pt-BR", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      function formatPrice(price) {
+        if (
+          typeof price === "string" &&
+          price.trim() !== "" &&
+          !isNaN(price.replace(",", "."))
+        ) {
+          // Aceita preço com vírgula ou ponto
+          const numPrice = parseFloat(price.replace(",", "."));
+          return `R$ ${numPrice.toFixed(2).replace(".", ",")}`;
+        }
+        if (typeof price === "string" && price.trim() !== "") {
+          // Se vier texto (ex: "Grátis", "A consultar"), mostra o texto original
+          return price;
+        }
+        return "-";
+      }
+
+      function getTodayString() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function getWeekDates(dateStr) {
+        const d = new Date(dateStr);
+        const day = d.getDay();
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - ((day + 6) % 7));
+        const week = [];
+        for (let i = 0; i < 6; i++) {
+          const wd = new Date(monday);
+          wd.setDate(monday.getDate() + i);
+          week.push(wd.toISOString().slice(0, 10));
+        }
+        return week;
+      }
+
+      function getTypeIcon(type) {
+        const icons = {
+          Salgado: "fas fa-hamburger",
+          Suco: "fas fa-glass-whiskey",
+          Refrigerante: "fas fa-bottle-droplet",
+          Sobremesa: "fas fa-birthday-cake",
+          Bebida: "fas fa-coffee",
+          Lanche: "fas fa-bread-slice",
+        };
+        return icons[type] || "fas fa-utensils";
+      }
+
+      function getCategoryClass(type) {
+        const classes = {
+          Salgado: "salgado",
+          Bebida: "bebida",
+          Suco: "bebida",
+          Refrigerante: "bebida",
+          Sobremesa: "sobremesa",
+          Lanche: "lanche",
+        };
+        return classes[type] || "salgado";
+      }
+
+      // Data fetching
+      async function fetchData(sheetName) {
+        try {
+          const response = await fetch(`${BASE_URL}/${SHEET_ID}/${sheetName}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return await response.json();
+        } catch (error) {
+          console.error(`Error fetching ${sheetName}:`, error);
+          throw error;
+        }
+      }
+
+      // State management
+      function showState(state) {
+        document.getElementById("loadingState").style.display =
+          state === "loading" ? "block" : "none";
+        document
+          .getElementById("errorState")
+          .classList.toggle("hidden", state !== "error");
+        document
+          .getElementById("mainContent")
+          .classList.toggle("hidden", state !== "main");
+        document
+          .getElementById("noAlmocoMessage")
+          .classList.toggle("hidden", state !== "noAlmoco");
+        document
+          .getElementById("noLanchesMessage")
+          .classList.toggle("hidden", state !== "noLanches");
+      }
+
+      // Rendering functions
+      function renderAlmoco() {
+        const almocoContainer = document.getElementById("almocoContent");
+        let almocoList = [];
+
+        if (showWeek) {
+          const weekDates = getWeekDates(selectedDate);
+          almocoList = almocoData.filter(
+            (item) =>
+              weekDates.includes(item.Data) &&
+              item.Status &&
+              item.Status.toLowerCase() === "ativo"
+          );
+        } else {
+          const almoco = almocoData.find(
+            (item) =>
+              item.Data === selectedDate &&
+              item.Status &&
+              item.Status.toLowerCase() === "ativo"
+          );
+          if (almoco) almocoList = [almoco];
+        }
+
+        if (!almocoList.length) {
+          almocoContainer.innerHTML = "";
+          showState("noAlmoco");
+          return;
+        }
+
+        showState("main");
+        almocoContainer.innerHTML = almocoList
+          .map((almoco, index) => {
+            const dataFormatada = almoco.Data
+              ? new Date(almoco.Data + "T00:00:00").toLocaleDateString(
+                  "pt-BR",
+                  {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  }
+                )
+              : "";
+
+            const prot1 = almoco["Proteína 1"] || "";
+            const prot2 = almoco["Proteína 2"] || "";
+            const img1 = almoco["Imagem Proteína 1"] || "";
+            const img2 = almoco["Imagem Proteína 2"] || "";
+            const acompanhamentos = almoco.Acompanhamentos
+              ? almoco.Acompanhamentos.split(",").map((a) => a.trim())
+              : [];
+            const saladas = almoco.Saladas
+              ? almoco.Saladas.split(",").map((s) => s.trim())
+              : [];
+
+            return `
+                    <div class="fade-in">
+                        <div class="text-center mb-6">
+                            <h3 class="text-2xl font-bold title-green capitalize">${dataFormatada}</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="protein-card orange bounce-in p-6 text-center">
+                                ${
+                                  img1
+                                    ? `<img src="${img1}" alt="${prot1}" class="protein-img">`
+                                    : ""
+                                }
+                                <h4 class="text-2xl font-bold mb-2">${prot1}</h4>
+                                <i class="fas fa-drumstick-bite text-3xl opacity-50"></i>
+                            </div>
+                            <div class="protein-card green bounce-in p-6 text-center">
+                                ${
+                                  img2
+                                    ? `<img src="${img2}" alt="${prot2}" class="protein-img">`
+                                    : ""
+                                }
+                                <h4 class="text-2xl font-bold mb-2">${prot2}</h4>
+                                <i class="fas fa-fish text-3xl opacity-50"></i>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="accent-card p-6 fade-in">
+                                <div class="flex items-center mb-4">
+                                    <div class="category-icon salgado">
+                                        <i class="fas fa-bowl-rice"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold title-green">Acompanhamentos</h4>
+                                </div>
+                                <ul class="space-y-2">
+                                    ${acompanhamentos
+                                      .map(
+                                        (a) =>
+                                          `<li class="text-gray-700 font-medium">• ${a}</li>`
+                                      )
+                                      .join("")}
+                                </ul>
+                            </div>
+                            
+                            <div class="accent-card p-6 fade-in">
+                                <div class="flex items-center mb-4">
+                                    <div class="category-icon bebida">
+                                        <i class="fas fa-leaf"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold title-green">Saladas</h4>
+                                </div>
+                                <ul class="space-y-2">
+                                    ${saladas
+                                      .map(
+                                        (s) =>
+                                          `<li class="text-gray-700 font-medium">• ${s}</li>`
+                                      )
+                                      .join("")}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      function renderLanches() {
+        const lanchesContainer = document.getElementById("lanchesContent");
+        const noLanchesMessage = document.getElementById("noLanchesMessage");
+        const filterButtons = document.getElementById("filterButtons");
+
+        const activeLanches = lanchesData.filter(
+          (item) => item.Status && item.Status.toLowerCase() === "ativo"
+        );
+
+        if (activeLanches.length === 0) {
+          lanchesContainer.innerHTML = "";
+          noLanchesMessage.classList.remove("hidden");
+          filterButtons.innerHTML = "";
+          return;
+        }
+
+        noLanchesMessage.classList.add("hidden");
+
+        // Group by type
+        const groupedLanches = activeLanches.reduce((acc, item) => {
+          const type = item.Tipo || "Outros";
+          if (!acc[type]) acc[type] = [];
+          acc[type].push(item);
+          return acc;
+        }, {});
+
+        // Create filter buttons
+        const types = Object.keys(groupedLanches);
+        filterButtons.innerHTML = `
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-th-large mr-2"></i>Todos
+                </button>
+                ${types
+                  .map(
+                    (type) => `
+                    <button class="filter-btn" data-filter="${type}">
+                        <i class="${getTypeIcon(type)} mr-2"></i>${type}
+                    </button>
+                `
+                  )
+                  .join("")}
+            `;
+
+        // Render sections
+        lanchesContainer.innerHTML = types
+          .map(
+            (type) => `
+                <div class="lanches-section fade-in" data-type="${type}">
+                    <div class="flex items-center mb-6">
+                        <div class="category-icon ${getCategoryClass(type)}">
+                            <i class="${getTypeIcon(type)}"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold title-green">${type}</h3>
+                        <div class="price-badge ml-4">
+                            ${groupedLanches[type].length} item${
+              groupedLanches[type].length > 1 ? "s" : ""
+            }
+                        </div>
+                    </div>
+                    
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        ${groupedLanches[type]
+                          .map(
+                            (item) => `
+                            <div class="snack-card p-6 bounce-in">
+                                ${
+                                  item.Imagem
+                                    ? `
+                                    <img src="${item.Imagem}" alt="${item.Nome}" class="w-full h-32 object-cover rounded-lg mb-4">
+                                `
+                                    : `
+                                    <div class="w-full h-32 bg-gradient-to-br from-orange-100 to-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                        <i class="${getTypeIcon(
+                                          type
+                                        )} text-4xl" style="color: var(--sesc-green);"></i>
+                                    </div>
+                                `
+                                }
+                                <h4 class="text-lg font-bold title-green mb-3">${
+                                  item.Nome
+                                }</h4>
+                                <div class="flex items-center justify-between">
+                                    <div class="price-badge">
+                                        ${formatPrice(item.Preço)}
+                                    </div>
+                                    <i class="${getTypeIcon(
+                                      type
+                                    )} text-xl" style="color: var(--sesc-green);"></i>
+                                </div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+
+        setupFilters();
+      }
+
+      function setupFilters() {
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        const sections = document.querySelectorAll(".lanches-section");
+
+        filterButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const filter = btn.dataset.filter;
+
+            // Update active button
+            filterButtons.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // Show/hide sections
+            sections.forEach((section) => {
+              if (filter === "all" || section.dataset.type === filter) {
+                section.style.display = "block";
+                section.classList.add("fade-in");
+              } else {
+                section.style.display = "none";
+              }
+            });
+          });
+        });
+      }
+
+      // Initialize app
+      async function init() {
+        document.getElementById("currentDate").textContent = formatDate(
+          new Date()
+        );
+
+        try {
+          const [almocoResponse, lanchesResponse] = await Promise.all([
+            fetchData("Almoco"),
+            fetchData("Lanches"),
+          ]);
+
+          almocoData = almocoResponse;
+          lanchesData = lanchesResponse;
+
+          renderAlmoco();
+          renderLanches();
+
+          document.getElementById("loadingState").style.display = "none";
+          document.getElementById("mainContent").classList.remove("hidden");
+          document.getElementById("lastUpdate").textContent =
+            new Date().toLocaleTimeString("pt-BR");
+        } catch (error) {
+          console.error("Error initializing app:", error);
+          document.getElementById("loadingState").style.display = "none";
+          document.getElementById("errorState").classList.remove("hidden");
+        }
+      }
+
+      // Event listeners
+      document.addEventListener("DOMContentLoaded", init);
+      document.getElementById("datePicker").value = getTodayString();
+      document.getElementById("datePicker").addEventListener("change", (e) => {
+        selectedDate = e.target.value;
+        showWeek = false;
+        renderAlmoco();
+      });
+      document.getElementById("weekBtn").addEventListener("click", () => {
+        if (document.getElementById("datePicker").value) {
+          selectedDate = document.getElementById("datePicker").value;
+          showWeek = true;
+          renderAlmoco();
+        }
+      });
+
+      // Auto-refresh every 30 minutes
+      setInterval(init, 30 * 60 * 1000);
+    </script>
+  </body>
+</html>

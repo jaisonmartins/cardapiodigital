@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cardápio Digital SESC</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: "Inter", sans-serif;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .sesc-green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+
+      .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .bounce-in {
+        animation: bounceIn 0.8s ease-out forwards;
+      }
+
+      @keyframes bounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
+        }
+        70% {
+          transform: scale(0.9);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .pulse-loader {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .price-tag {
+        background: linear-gradient(45deg, #f59e0b, #d97706);
+        color: white;
+        font-weight: 600;
+      }
+
+      .category-badge {
+        background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+      }
+
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          color-adjust: exact;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #f0f0f0 25%,
+          #e0e0e0 50%,
+          #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      .proteina-img {
+        width: 400px;
+        height: 400px;
+        max-width: 100%;
+        object-fit: cover;
+        border-radius: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 24px rgba(31, 38, 135, 0.1);
+        border: 3px solid #e0e7ef;
+        display: block;
+      }
+      @media (max-width: 900px) {
+        .proteina-img {
+          width: 100%;
+          height: 250px;
+        }
+      }
+      @media (max-width: 640px) {
+        .proteina-img {
+          width: 100%;
+          height: 180px;
+          border-radius: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="sesc-green text-white py-8 mb-8">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-5xl font-bold mb-2 bounce-in">
+            <i class="fas fa-utensils mr-3"></i>
+            Cardápio Digital SESC
+          </h1>
+          <p class="text-xl md:text-2xl font-light opacity-90 fade-in">
+            Hoje é <span id="currentDate" class="font-medium"></span>
+          </p>
+          <div class="mt-4 fade-in">
+            <div
+              class="inline-flex items-center bg-white bg-opacity-20 rounded-full px-6 py-2"
+            >
+              <i class="fas fa-clock mr-2"></i>
+              <span class="font-medium">Funcionamento: 11:30 às 14:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container mx-auto px-4">
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-12">
+        <div
+          class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"
+        ></div>
+        <p class="text-gray-600 text-lg">Carregando cardápio delicioso...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden text-center py-12">
+        <div
+          class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg inline-block"
+        >
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          <span>Erro ao carregar o cardápio. Tente novamente mais tarde.</span>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div id="mainContent" class="hidden">
+        <!-- Almoço do Dia -->
+        <section class="mb-12">
+          <div class="text-center mb-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              <i class="fas fa-bowl-food mr-3 text-green-600"></i>
+              Almoço do Dia
+            </h2>
+            <div
+              class="w-24 h-1 bg-gradient-to-r from-green-400 to-green-600 mx-auto rounded-full"
+            ></div>
+          </div>
+
+          <!-- Date selector and button -->
+          <div
+            class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 no-print"
+          >
+            <input
+              type="date"
+              id="datePicker"
+              class="border border-gray-300 rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+            <button
+              id="weekBtn"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200 shadow-md"
+            >
+              <i class="fas fa-calendar-week mr-2"></i>Ver Semana
+            </button>
+          </div>
+
+          <div id="almocoContent" class="grid gap-6 md:gap-8">
+            <!-- Almoço cards will be inserted here -->
+          </div>
+
+          <div id="noAlmocoMessage" class="hidden text-center py-12">
+            <div
+              class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-8 py-6 rounded-xl inline-block"
+            >
+              <i class="fas fa-info-circle mr-3 text-2xl"></i>
+              <span class="text-xl font-medium"
+                >Almoço não disponível hoje</span
+              >
+            </div>
+          </div>
+        </section>
+
+        <!-- Lanches do Dia -->
+        <section class="mb-12">
+          <div class="text-center mb-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              <i class="fas fa-cookie-bite mr-3 text-orange-500"></i>
+              Lanches do Dia
+            </h2>
+            <div
+              class="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-600 mx-auto rounded-full"
+            ></div>
+          </div>
+
+          <!-- Filter Buttons -->
+          <div
+            id="filterButtons"
+            class="flex flex-wrap justify-center gap-3 mb-8"
+          >
+            <button
+              class="filter-btn active px-6 py-3 rounded-full font-medium transition-all duration-300 bg-purple-600 text-white"
+              data-filter="all"
+            >
+              <i class="fas fa-th-large mr-2"></i>Todos
+            </button>
+          </div>
+
+          <div id="lanchesContent" class="space-y-8">
+            <!-- Lanches sections will be inserted here -->
+          </div>
+
+          <div id="noLanchesMessage" class="hidden text-center py-12">
+            <div
+              class="bg-blue-100 border border-blue-400 text-blue-700 px-8 py-6 rounded-xl inline-block"
+            >
+              <i class="fas fa-info-circle mr-3 text-2xl"></i>
+              <span class="text-xl font-medium"
+                >Nenhum lanche disponível hoje</span
+              >
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+      <div class="container mx-auto px-4 text-center">
+        <div class="mb-4">
+          <i class="fas fa-heart text-red-500 mr-2"></i>
+          <span class="text-lg">Feito com carinho para você</span>
+        </div>
+        <p class="text-gray-400">SESC - Serviço Social do Comércio</p>
+        <div class="mt-4 text-sm text-gray-500">
+          Atualizado automaticamente • <span id="lastUpdate"></span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Configuration
+      const SHEET_ID = "1IhNTuKhJVGSxE8jgTJZR3dXQloRFE2DC3T-B9Y9vhP4";
+      const BASE_URL = "https://opensheet.elk.sh";
+
+      // Global state
+      let almocoData = [];
+      let lanchesData = [];
+      let currentFilter = "all";
+      let selectedDate = getTodayString();
+      let showWeek = false;
+
+      // Função para obter o intervalo da semana (segunda a domingo)
+      function getWeekDates(dateStr) {
+        const d = new Date(dateStr);
+        const day = d.getDay();
+        // Segunda = 1, Sábado = 6
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - ((day + 6) % 7));
+        const week = [];
+        for (let i = 0; i < 6; i++) {
+          const wd = new Date(monday);
+          wd.setDate(monday.getDate() + i);
+          week.push(wd.toISOString().slice(0, 10));
+        }
+        return week;
+      }
+
+      // Utility functions
+      function formatDate(date) {
+        return date.toLocaleDateString("pt-BR", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      function formatPrice(price) {
+        if (typeof price === "string" && price.trim() !== "" && !isNaN(price.replace(",", "."))) {
+          // Aceita preço com vírgula ou ponto
+          const numPrice = parseFloat(price.replace(",", "."));
+          return `R$ ${numPrice.toFixed(2).replace(".", ",")}`;
+        }
+        if (typeof price === "string" && price.trim() !== "") {
+          // Se vier texto (ex: "Grátis", "A consultar"), mostra o texto original
+          return price;
+        }
+        return "-";
+      }
+
+      function getTodayString() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function createImageElement(src, alt, className = "") {
+        if (!src || src.trim() === "") return "";
+        return `<img src="${src}" alt="${alt}" class="w-full h-48 object-cover rounded-lg mb-4 ${className}" onerror="this.style.display='none'">`;
+      }
+
+      function getTypeIcon(type) {
+        const icons = {
+          Salgado: "fas fa-hamburger text-orange-500",
+          Suco: "fas fa-glass-whiskey text-blue-500",
+          Refrigerante: "fas fa-bottle-droplet text-red-500",
+          Sobremesa: "fas fa-birthday-cake text-pink-500",
+          Bebida: "fas fa-coffee text-yellow-700",
+          Lanche: "fas fa-bread-slice text-yellow-500",
+        };
+        return icons[type] || "fas fa-utensils text-gray-500";
+      }
+
+      // Data fetching functions
+      async function fetchData(sheetName) {
+        try {
+          const response = await fetch(`${BASE_URL}/${SHEET_ID}/${sheetName}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(`${sheetName} data:`, data);
+          return data;
+        } catch (error) {
+          console.error(`Error fetching ${sheetName}:`, error);
+          throw error;
+        }
+      }
+
+      // Rendering functions
+      function showState(state) {
+        // state: 'loading', 'error', 'main', 'noAlmoco', 'noLanches'
+        document.getElementById("loadingState").style.display =
+          state === "loading" ? "block" : "none";
+        document
+          .getElementById("errorState")
+          .classList.toggle("hidden", state !== "error");
+        document
+          .getElementById("mainContent")
+          .classList.toggle("hidden", state !== "main");
+        document
+          .getElementById("noAlmocoMessage")
+          .classList.toggle("hidden", state !== "noAlmoco");
+        document
+          .getElementById("noLanchesMessage")
+          .classList.toggle("hidden", state !== "noLanches");
+      }
+
+      function renderAlmoco() {
+        const almocoContainer = document.getElementById("almocoContent");
+        let almocoList = [];
+        if (showWeek) {
+          const weekDates = getWeekDates(selectedDate);
+          almocoList = almocoData.filter(
+            (item) =>
+              weekDates.includes(item.Data) &&
+              item.Status &&
+              item.Status.toLowerCase() === "ativo"
+          );
+        } else {
+          const almoco = almocoData.find(
+            (item) =>
+              item.Data === selectedDate &&
+              item.Status &&
+              item.Status.toLowerCase() === "ativo"
+          );
+          if (almoco) almocoList = [almoco];
+        }
+        if (!almocoList.length) {
+          almocoContainer.innerHTML = "";
+          showState("noAlmoco");
+          return;
+        }
+        showState("main");
+        almocoContainer.innerHTML = almocoList
+          .map((todayAlmoco) => {
+            const img1 = todayAlmoco["Imagem Proteína 1"] || "";
+            const img2 = todayAlmoco["Imagem Proteína 2"] || "";
+            const prot1 = todayAlmoco["Proteína 1"] || "";
+            const prot2 = todayAlmoco["Proteína 2"] || "";
+            const acompanhamentos = todayAlmoco.Acompanhamentos
+              ? todayAlmoco.Acompanhamentos.split(",").map((a) => a.trim())
+              : [];
+            const saladas = todayAlmoco.Saladas
+              ? todayAlmoco.Saladas.split(",").map((s) => s.trim())
+              : [];
+            const dataFormatada = todayAlmoco.Data
+              ? new Date(todayAlmoco.Data + "T00:00:00").toLocaleDateString(
+                  "pt-BR",
+                  {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  }
+                )
+              : "";
+            return `
+              <div class="mb-8">
+                <div class="text-lg font-semibold text-green-700 mb-2">${dataFormatada}</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="bg-white rounded-2xl shadow-lg card-hover p-6 fade-in flex flex-col items-center">
+                    ${
+                      img1
+                        ? `<img src="${img1}" alt="${prot1}" class="proteina-img">`
+                        : ""
+                    }
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">${prot1}</h3>
+                  </div>
+                  <div class="bg-white rounded-2xl shadow-lg card-hover p-6 fade-in flex flex-col items-center">
+                    ${
+                      img2
+                        ? `<img src="${img2}" alt="${prot2}" class="proteina-img">`
+                        : ""
+                    }
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">${prot2}</h3>
+                  </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg card-hover p-6 fade-in mt-6">
+                  <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                      <i class="fas fa-bowl-rice text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Acompanhamentos</h3>
+                  </div>
+                  <ul class="list-disc ml-8 space-y-1">
+                    ${acompanhamentos
+                      .map((a) => `<li class="text-gray-800">${a}</li>`)
+                      .join("")}
+                  </ul>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg card-hover p-6 fade-in mt-6">
+                  <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                      <i class="fas fa-leaf text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Saladas</h3>
+                  </div>
+                  <ul class="list-disc ml-8 space-y-1">
+                    ${saladas
+                      .map((s) => `<li class="text-gray-800">${s}</li>`)
+                      .join("")}
+                  </ul>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderLanches() {
+        const lanchesContainer = document.getElementById("lanchesContent");
+        const noLanchesMessage = document.getElementById("noLanchesMessage");
+        const filterButtons = document.getElementById("filterButtons");
+
+        const activeLanches = lanchesData.filter(
+          (item) => item.Status && item.Status.toLowerCase() === "ativo"
+        );
+
+        if (activeLanches.length === 0) {
+          lanchesContainer.innerHTML = "";
+          noLanchesMessage.classList.remove("hidden");
+          filterButtons.innerHTML = "";
+          return;
+        }
+
+        noLanchesMessage.classList.add("hidden");
+
+        // Group by type
+        const groupedLanches = activeLanches.reduce((acc, item) => {
+          const type = item.Tipo || "Outros";
+          if (!acc[type]) acc[type] = [];
+          acc[type].push(item);
+          return acc;
+        }, {});
+
+        // Create filter buttons
+        const types = Object.keys(groupedLanches);
+        filterButtons.innerHTML = `
+                <button class="filter-btn active px-6 py-3 rounded-full font-medium transition-all duration-300 bg-purple-600 text-white" data-filter="all">
+                    <i class="fas fa-th-large mr-2"></i>Todos
+                </button>
+                ${types
+                  .map(
+                    (type) => `
+                    <button class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-gray-200 text-gray-700 hover:bg-purple-100" data-filter="${type}">
+                        <i class="${getTypeIcon(type)} mr-2"></i>${type}
+                    </button>
+                `
+                  )
+                  .join("")}
+            `;
+
+        // Render sections
+        lanchesContainer.innerHTML = types
+          .map(
+            (type) => `
+                <div class="lanches-section fade-in" data-type="${type}">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="${getTypeIcon(type)} text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800">${type}</h3>
+                        <div class="ml-4 category-badge text-white px-3 py-1 rounded-full text-sm">
+                            ${groupedLanches[type].length} item${
+              groupedLanches[type].length > 1 ? "s" : ""
+            }
+                        </div>
+                    </div>
+                    
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        ${groupedLanches[type]
+                          .map(
+                            (item) => `
+                            <div class="bg-white rounded-2xl shadow-lg card-hover p-6 bounce-in">
+                                ${
+                                  item.Imagem
+                                    ? createImageElement(item.Imagem, item.Nome)
+                                    : `
+                                    <div class="w-full h-48 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg mb-4 flex items-center justify-center">
+                                        <i class="${getTypeIcon(
+                                          type
+                                        )} text-6xl opacity-30"></i>
+                                    </div>
+                                `
+                                }
+                                <h4 class="text-lg font-bold text-gray-800 mb-3">${
+                                  item.Nome
+                                }</h4>
+                                <div class="flex items-center justify-between">
+                                    <div class="price-tag px-4 py-2 rounded-full text-lg font-bold">
+                                        ${formatPrice(item.Preço)}
+                                    </div>
+                                    <div class="text-gray-400">
+                                        <i class="${getTypeIcon(
+                                          type
+                                        )} text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+
+        // Add filter functionality
+        setupFilters();
+      }
+
+      function setupFilters() {
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        const sections = document.querySelectorAll(".lanches-section");
+
+        filterButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const filter = btn.dataset.filter;
+
+            // Update active button
+            filterButtons.forEach((b) => {
+              b.classList.remove("active", "bg-purple-600", "text-white");
+              b.classList.add("bg-gray-200", "text-gray-700");
+            });
+            btn.classList.add("active", "bg-purple-600", "text-white");
+            btn.classList.remove("bg-gray-200", "text-gray-700");
+
+            // Show/hide sections
+            sections.forEach((section) => {
+              if (filter === "all" || section.dataset.type === filter) {
+                section.style.display = "block";
+                section.classList.add("fade-in");
+              } else {
+                section.style.display = "none";
+              }
+            });
+          });
+        });
+      }
+
+      // Main initialization
+      async function init() {
+        // Set current date
+        document.getElementById("currentDate").textContent = formatDate(
+          new Date()
+        );
+
+        try {
+          // Fetch data
+          const [almocoResponse, lanchesResponse] = await Promise.all([
+            fetchData("Almoco"),
+            fetchData("Lanches"),
+          ]);
+
+          almocoData = almocoResponse;
+          lanchesData = lanchesResponse;
+
+          // Render content
+          renderAlmoco();
+          renderLanches();
+
+          // Show main content
+          document.getElementById("loadingState").style.display = "none";
+          document.getElementById("mainContent").classList.remove("hidden");
+
+          // Update last update time
+          document.getElementById("lastUpdate").textContent =
+            new Date().toLocaleTimeString("pt-BR");
+        } catch (error) {
+          console.error("Error initializing app:", error);
+          document.getElementById("loadingState").style.display = "none";
+          document.getElementById("errorState").classList.remove("hidden");
+        }
+      }
+
+      // Initialize app when DOM is ready
+      document.addEventListener("DOMContentLoaded", init);
+
+      // Auto-refresh every 30 minutes
+      setInterval(init, 30 * 60 * 1000);
+
+      // Event listeners corretos para datePicker e weekBtn
+      document.getElementById("datePicker").value = getTodayString();
+      document.getElementById("datePicker").addEventListener("change", (e) => {
+        selectedDate = e.target.value;
+        showWeek = false;
+        renderAlmoco();
+      });
+      document.getElementById("weekBtn").addEventListener("click", () => {
+        if (document.getElementById("datePicker").value) {
+          selectedDate = document.getElementById("datePicker").value;
+          showWeek = true;
+          renderAlmoco();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cardápio Digital SESC</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #0F766E;
+        --primary-light: #14B8A6;
+        --primary-dark: #134E4A;
+        --secondary-color: #F59E0B;
+        --secondary-light: #FCD34D;
+        --accent-color: #8B5CF6;
+        --accent-light: #A78BFA;
+        --surface-color: #FFFFFF;
+        --surface-secondary: #F8FAFC;
+        --text-primary: #1F2937;
+        --text-secondary: #6B7280;
+        --border-color: #E5E7EB;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --border-radius: 1.5rem;
+        --border-radius-sm: 0.75rem;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        min-height: 100vh;
+      }
+
+      .modern-gradient {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+      }
+
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .modern-card {
+        background: var(--surface-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .modern-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-light), var(--accent-color));
+        opacity: 0;
+        transition: var(--transition);
+      }
+
+      .modern-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary-light);
+      }
+
+      .modern-card:hover::before {
+        opacity: 1;
+      }
+
+      .modern-btn {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: var(--transition);
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .modern-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .modern-btn:hover::before {
+        left: 100%;
+      }
+
+      .modern-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .modern-btn.secondary {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
+      }
+
+      .modern-btn.accent {
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+      }
+
+      .filter-btn {
+        background: var(--surface-secondary);
+        color: var(--text-secondary);
+        border: 2px solid var(--border-color);
+        padding: 0.75rem 1.25rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .filter-btn:hover {
+        background: var(--primary-light);
+        color: white;
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .filter-btn.active {
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+        color: white;
+        border-color: var(--accent-color);
+        box-shadow: var(--shadow-md);
+      }
+
+      .price-tag {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        box-shadow: var(--shadow-sm);
+        display: inline-block;
+      }
+
+      .section-badge {
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .icon-container {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: var(--transition);
+      }
+
+      .icon-container.primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+      }
+
+      .icon-container.secondary {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
+        color: white;
+      }
+
+      .icon-container.accent {
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+        color: white;
+      }
+
+      .modern-card:hover .icon-container {
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      .fade-in {
+        animation: modernFadeIn 0.8s ease-out forwards;
+      }
+
+      @keyframes modernFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .slide-in {
+        animation: slideIn 0.6s ease-out forwards;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .bounce-in {
+        animation: modernBounceIn 1s ease-out forwards;
+      }
+
+      @keyframes modernBounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3) rotate(-10deg);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05) rotate(2deg);
+        }
+        70% {
+          transform: scale(0.95) rotate(-1deg);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+        }
+      }
+
+      .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 0.25rem solid var(--border-color);
+        border-top: 0.25rem solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .proteina-img {
+        width: 100%;
+        max-width: 400px;
+        height: 280px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-md);
+        border: 3px solid var(--border-color);
+        transition: var(--transition);
+      }
+
+      .proteina-img:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-lg);
+      }
+
+      @media (max-width: 768px) {
+        .proteina-img {
+          height: 220px;
+        }
+        
+        .modern-card {
+          border-radius: var(--border-radius-sm);
+        }
+        
+        .icon-container {
+          width: 3rem;
+          height: 3rem;
+          font-size: 1.25rem;
+        }
+      }
+
+      .divider {
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-light), var(--accent-color));
+        border-radius: 2px;
+        margin: 0 auto;
+        width: 4rem;
+      }
+
+      .status-indicator {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        background: #10B981;
+        border-radius: 50%;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+      }
+
+      .item-card {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .item-card .image-placeholder {
+        background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 12rem;
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 1rem;
+      }
+
+      .modern-input {
+        background: var(--surface-color);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius-sm);
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: var(--transition);
+        color: var(--text-primary);
+      }
+
+      .modern-input:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+      }
+
+      .header-decoration {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        pointer-events: none;
+      }
+
+      @media print {
+        body {
+          background: white !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .modern-card {
+          break-inside: avoid;
+          box-shadow: none !important;
+          border: 1px solid #ccc !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="modern-gradient text-white py-12 mb-8 relative overflow-hidden">
+      <div class="header-decoration"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center">
+          <h1 class="text-5xl md:text-6xl font-bold mb-4 bounce-in">
+            <i class="fas fa-utensils mr-4"></i>
+            Cardápio Digital SESC
+          </h1>
+          <p class="text-xl md:text-2xl font-light opacity-90 fade-in mb-6">
+            Hoje é <span id="currentDate" class="font-semibold"></span>
+          </p>
+          <div class="fade-in">
+            <div class="glass-effect inline-flex items-center rounded-full px-8 py-3 backdrop-blur-sm">
+              <i class="fas fa-clock mr-3 text-xl"></i>
+              <span class="font-semibold text-lg">Funcionamento: 11:30 às 14:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container mx-auto px-4 pb-8">
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-16">
+        <div class="loading-spinner mx-auto mb-6"></div>
+        <p class="text-gray-600 text-xl font-medium">Carregando cardápio delicioso...</p>
+        <p class="text-gray-500 text-sm mt-2">Preparando as melhores opções para você</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden text-center py-16">
+        <div class="modern-card inline-block p-8 bg-red-50 border-red-200">
+          <div class="icon-container secondary mx-auto mb-4">
+            <i class="fas fa-exclamation-triangle text-red-500"></i>
+          </div>
+          <h3 class="text-xl font-bold text-red-700 mb-2">Ops! Algo deu errado</h3>
+          <p class="text-red-600">Erro ao carregar o cardápio. Tente novamente mais tarde.</p>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div id="mainContent" class="hidden">
+        <!-- Almoço do Dia -->
+        <section class="mb-16">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4 slide-in">
+              <i class="fas fa-bowl-food mr-4 text-emerald-600"></i>
+              Almoço do Dia
+            </h2>
+            <div class="divider mb-6"></div>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+              Pratos principais fresquinhos e nutritivos, preparados especialmente para você
+            </p>
+          </div>
+
+          <!-- Date selector and button -->
+          <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-12 no-print">
+            <input
+              type="date"
+              id="datePicker"
+              class="modern-input text-lg min-w-[200px]"
+            />
+            <button id="weekBtn" class="modern-btn">
+              <i class="fas fa-calendar-week mr-2"></i>Ver Semana Completa
+            </button>
+          </div>
+
+          <div id="almocoContent" class="space-y-8">
+            <!-- Almoço cards will be inserted here -->
+          </div>
+
+          <div id="noAlmocoMessage" class="hidden text-center py-16">
+            <div class="modern-card inline-block p-8 bg-yellow-50 border-yellow-200">
+              <div class="icon-container secondary mx-auto mb-4">
+                <i class="fas fa-info-circle text-yellow-600"></i>
+              </div>
+              <h3 class="text-xl font-bold text-yellow-700 mb-2">Almoço Indisponível</h3>
+              <p class="text-yellow-600">Não há almoço disponível para esta data</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Lanches do Dia -->
+        <section class="mb-16">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4 slide-in">
+              <i class="fas fa-cookie-bite mr-4 text-amber-500"></i>
+              Lanches & Bebidas
+            </h2>
+            <div class="divider mb-6"></div>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+              Uma seleção especial de lanches e bebidas para todos os momentos
+            </p>
+          </div>
+
+          <!-- Filter Buttons -->
+          <div id="filterButtons" class="flex flex-wrap justify-center gap-3 mb-12">
+            <button class="filter-btn active" data-filter="all">
+              <i class="fas fa-th-large"></i>Todos os Itens
+            </button>
+          </div>
+
+          <div id="lanchesContent" class="space-y-12">
+            <!-- Lanches sections will be inserted here -->
+          </div>
+
+          <div id="noLanchesMessage" class="hidden text-center py-16">
+            <div class="modern-card inline-block p-8 bg-blue-50 border-blue-200">
+              <div class="icon-container accent mx-auto mb-4">
+                <i class="fas fa-info-circle text-blue-600"></i>
+              </div>
+              <h3 class="text-xl font-bold text-blue-700 mb-2">Nenhum Lanche Disponível</h3>
+              <p class="text-blue-600">Não há lanches disponíveis no momento</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-20">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <div class="mb-6">
+            <i class="fas fa-heart text-red-400 mr-3 text-xl"></i>
+            <span class="text-xl font-medium">Feito com carinho para você</span>
+          </div>
+          <h3 class="text-2xl font-bold mb-2">SESC - Serviço Social do Comércio</h3>
+          <p class="text-gray-400 mb-6">Alimentação de qualidade, sempre</p>
+          <div class="text-sm text-gray-500 bg-gray-800 inline-block px-6 py-3 rounded-full">
+            <i class="fas fa-sync-alt mr-2"></i>
+            Atualizado automaticamente • <span id="lastUpdate"></span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Configuration
+      const SHEET_ID = "1IhNTuKhJVGSxE8jgTJZR3dXQloRFE2DC3T-B9Y9vhP4";
+      const BASE_URL = "https://opensheet.elk.sh";
+
+      // Global state
+      let almocoData = [];
+      let lanchesData = [];
+      let currentFilter = "all";
+      let selectedDate = getTodayString();
+      let showWeek = false;
+
+      // Utility functions
+      function formatDate(date) {
+        return date.toLocaleDateString("pt-BR", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      function formatPrice(price) {
+        if (typeof price === "string" && price.trim() !== "" && !isNaN(price.replace(",", "."))) {
+          // Aceita preço com vírgula ou ponto
+          const numPrice = parseFloat(price.replace(",", "."));
+          return `R$ ${numPrice.toFixed(2).replace(".", ",")}`;
+        }
+        if (typeof price === "string" && price.trim() !== "") {
+          // Se vier texto (ex: "Grátis", "A consultar"), mostra o texto original
+          return price;
+        }
+        return "-";
+      }
+
+      function getTodayString() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function getWeekDates(dateStr) {
+        const d = new Date(dateStr);
+        const day = d.getDay();
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - ((day + 6) % 7));
+        const week = [];
+        for (let i = 0; i < 6; i++) {
+          const wd = new Date(monday);
+          wd.setDate(monday.getDate() + i);
+          week.push(wd.toISOString().slice(0, 10));
+        }
+        return week;
+      }
+
+      function createImageElement(src, alt, className = "") {
+        if (!src || src.trim() === "") return "";
+        return `<img src="${src}" alt="${alt}" class="w-full h-48 object-cover rounded-xl mb-4 shadow-md transition-transform duration-300 hover:scale-105 ${className}" onerror="this.style.display='none'">`;
+      }
+
+      function getTypeIcon(type) {
+        const icons = {
+          Salgado: "fas fa-hamburger",
+          Suco: "fas fa-glass-whiskey",
+          Refrigerante: "fas fa-bottle-water",
+          Sobremesa: "fas fa-birthday-cake",
+          Bebida: "fas fa-coffee",
+          Lanche: "fas fa-bread-slice",
+        };
+        return icons[type] || "fas fa-utensils";
+      }
+
+      function getTypeColor(type) {
+        const colors = {
+          Salgado: "secondary",
+          Suco: "primary",
+          Refrigerante: "accent",
+          Sobremesa: "secondary",
+          Bebida: "primary",
+          Lanche: "accent",
+        };
+        return colors[type] || "primary";
+      }
+
+      // Data fetching functions
+      async function fetchData(sheetName) {
+        try {
+          const response = await fetch(`${BASE_URL}/${SHEET_ID}/${sheetName}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(`${sheetName} data:`, data);
+          return data;
+        } catch (error) {
+          console.error(`Error fetching ${sheetName}:`, error);
+          throw error;
+        }
+      }
+
+      // Rendering functions
+      function showState(state) {
+        document.getElementById("loadingState").style.display =
+          state === "loading" ? "block" : "none";
+        document
+          .getElementById("errorState")
+          .classList.toggle("hidden", state !== "error");
+        document
+          .getElementById("mainContent")
+          .classList.toggle("hidden", state !== "main");
+        document
+          .getElementById("noAlmocoMessage")
+          .classList.toggle("hidden", state !== "noAlmoco");
+        document
+          .getElementById("noLanchesMessage")
+          .classList.toggle("hidden", state !== "noLanches");
+      }
+
+      function renderAlmoco() {
+        const almocoContainer = document.getElementById("almocoContent");
+        let almocoList = [];
+        
+        if (showWeek) {
+          const weekDates = getWeekDates(selectedDate);
+          almocoList = almocoData.filter(
+            (item) =>
+              weekDates.includes(item.Data) &&
+              item.Status &&
+              item.Status.toLowerCase() === "ativo"
+          );
+        } else {
+          const almoco = almocoData.find(
+            (item) =>
+              item.Data === selectedDate &&
+              item.Status &&
+              item.Status.toLowerCase() === "ativo"
+          );
+          if (almoco) almocoList = [almoco];
+        }
+
+        if (!almocoList.length) {
+          almocoContainer.innerHTML = "";
+          showState("noAlmoco");
+          return;
+        }
+
+        showState("main");
+        almocoContainer.innerHTML = almocoList
+          .map((todayAlmoco) => {
+            const img1 = todayAlmoco["Imagem Proteína 1"] || "";
+            const img2 = todayAlmoco["Imagem Proteína 2"] || "";
+            const prot1 = todayAlmoco["Proteína 1"] || "";
+            const prot2 = todayAlmoco["Proteína 2"] || "";
+            const acompanhamentos = todayAlmoco.Acompanhamentos
+              ? todayAlmoco.Acompanhamentos.split(",").map((a) => a.trim())
+              : [];
+            const saladas = todayAlmoco.Saladas
+              ? todayAlmoco.Saladas.split(",").map((s) => s.trim())
+              : [];
+            const dataFormatada = todayAlmoco.Data
+              ? new Date(todayAlmoco.Data + 'T00:00:00').toLocaleDateString('pt-BR', { 
+                  weekday: 'long', 
+                  day: '2-digit', 
+                  month: '2-digit', 
+                  year: 'numeric' 
+                })
+              : '';
+            
+            return `
+              <div class="mb-12 fade-in">
+                <div class="text-center mb-8">
+                  <h3 class="text-2xl font-bold text-emerald-700 bg-emerald-50 inline-block px-6 py-3 rounded-full">
+                    <i class="fas fa-calendar-day mr-2"></i>${dataFormatada}
+                  </h3>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                  <div class="modern-card p-8 text-center fade-in">
+                    <div class="status-indicator"></div>
+                    ${img1 ? `<img src="${img1}" alt="${prot1}" class="proteina-img mx-auto">` : `
+                      <div class="image-placeholder mx-auto mb-6">
+                        <i class="fas fa-drumstick-bite text-4xl text-gray-400"></i>
+                      </div>
+                    `}
+                    <h4 class="text-2xl font-bold text-gray-800 mb-2">${prot1}</h4>
+                    <div class="section-badge">Proteína Principal</div>
+                  </div>
+                  
+                  <div class="modern-card p-8 text-center fade-in">
+                    <div class="status-indicator"></div>
+                    ${img2 ? `<img src="${img2}" alt="${prot2}" class="proteina-img mx-auto">` : `
+                      <div class="image-placeholder mx-auto mb-6">
+                        <i class="fas fa-fish text-4xl text-gray-400"></i>
+                      </div>
+                    `}
+                    <h4 class="text-2xl font-bold text-gray-800 mb-2">${prot2}</h4>
+                    <div class="section-badge">Opção Alternativa</div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div class="modern-card p-8 fade-in">
+                    <div class="flex items-center mb-6">
+                      <div class="icon-container secondary mr-4">
+                        <i class="fas fa-bowl-rice"></i>
+                      </div>
+                      <div>
+                        <h4 class="text-xl font-bold text-gray-800">Acompanhamentos</h4>
+                        <p class="text-gray-600 text-sm">Complementos nutritivos</p>
+                      </div>
+                    </div>
+                    <ul class="space-y-3">
+                      ${acompanhamentos.map((a) => `
+                        <li class="flex items-center text-gray-700">
+                          <i class="fas fa-check-circle text-emerald-500 mr-3"></i>
+                          <span class="font-medium">${a}</span>
+                        </li>
+                      `).join("")}
+                    </ul>
+                  </div>
+
+                  <div class="modern-card p-8 fade-in">
+                    <div class="flex items-center mb-6">
+                      <div class="icon-container primary mr-4">
+                        <i class="fas fa-leaf"></i>
+                      </div>
+                      <div>
+                        <h4 class="text-xl font-bold text-gray-800">Saladas</h4>
+                        <p class="text-gray-600 text-sm">Frescas e saudáveis</p>
+                      </div>
+                    </div>
+                    <ul class="space-y-3">
+                      ${saladas.map((s) => `
+                        <li class="flex items-center text-gray-700">
+                          <i class="fas fa-check-circle text-emerald-500 mr-3"></i>
+                          <span class="font-medium">${s}</span>
+                        </li>
+                      `).join("")}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderLanches() {
+        const lanchesContainer = document.getElementById("lanchesContent");
+        const noLanchesMessage = document.getElementById("noLanchesMessage");
+        const filterButtons = document.getElementById("filterButtons");
+
+        const activeLanches = lanchesData.filter(
+          (item) => item.Status && item.Status.toLowerCase() === "ativo"
+        );
+
+        if (activeLanches.length === 0) {
+          lanchesContainer.innerHTML = "";
+          noLanchesMessage.classList.remove("hidden");
+          filterButtons.innerHTML = "";
+          return;
+        }
+
+        noLanchesMessage.classList.add("hidden");
+
+        // Group by type
+        const groupedLanches = activeLanches.reduce((acc, item) => {
+          const type = item.Tipo || "Outros";
+          if (!acc[type]) acc[type] = [];
+          acc[type].push(item);
+          return acc;
+        }, {});
+
+        // Create filter buttons
+        const types = Object.keys(groupedLanches);
+        filterButtons.innerHTML = `
+          <button class="filter-btn active" data-filter="all">
+            <i class="fas fa-th-large"></i>Todos os Itens
+          </button>
+          ${types
+            .map(
+              (type) => `
+              <button class="filter-btn" data-filter="${type}">
+                <i class="${getTypeIcon(type)}"></i>${type}
+                <span class="section-badge ml-2">${groupedLanches[type].length}</span>
+              </button>
+            `
+            ).join("")}
+        `;
+
+        // Render sections
+        lanchesContainer.innerHTML = types
+          .map(
+            (type) => `
+              <div class="lanches-section fade-in" data-type="${type}">
+                <div class="flex items-center justify-center mb-8">
+                  <div class="icon-container ${getTypeColor(type)} mr-4">
+                    <i class="${getTypeIcon(type)}"></i>
+                  </div>
+                  <div class="text-center">
+                    <h3 class="text-3xl font-bold text-gray-800">${type}</h3>
+                    <p class="text-gray-600">${groupedLanches[type].length} opção${groupedLanches[type].length > 1 ? "ões" : ""} disponível${groupedLanches[type].length > 1 ? "eis" : ""}</p>
+                  </div>
+                </div>
+                
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  ${groupedLanches[type]
+                    .map(
+                      (item) => `
+                      <div class="modern-card item-card p-6 text-center bounce-in">
+                        <div class="status-indicator"></div>
+                        ${
+                          item.Imagem
+                            ? createImageElement(item.Imagem, item.Nome, "rounded-xl")
+                            : `
+                            <div class="image-placeholder mb-4">
+                              <i class="${getTypeIcon(type)} text-4xl text-gray-400"></i>
+                            </div>
+                          `
+                        }
+                        <h4 class="text-lg font-bold text-gray-800 mb-4 leading-tight">${item.Nome}</h4>
+                        <div class="flex items-center justify-between">
+                          <div class="price-tag">
+                            ${formatPrice(item.Preço)}
+                          </div>
+                          <div class="icon-container ${getTypeColor(type)} scale-75">
+                            <i class="${getTypeIcon(type)}"></i>
+                          </div>
+                        </div>
+                      </div>
+                    `
+                    )
+                    .join("")}
+                </div>
+              </div>
+            `
+          )
+          .join("");
+
+        // Add filter functionality
+        setupFilters();
+      }
+
+      function setupFilters() {
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        const sections = document.querySelectorAll(".lanches-section");
+
+        filterButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const filter = btn.dataset.filter;
+
+            // Update active button
+            filterButtons.forEach((b) => {
+              b.classList.remove("active");
+            });
+            btn.classList.add("active");
+
+            // Show/hide sections with animation
+            sections.forEach((section) => {
+              if (filter === "all" || section.dataset.type === filter) {
+                section.style.display = "block";
+                section.classList.add("fade-in");
+              } else {
+                section.style.display = "none";
+              }
+            });
+          });
+        });
+      }
+
+      // Main initialization
+      async function init() {
+        // Set current date
+        document.getElementById("currentDate").textContent = formatDate(new Date());
+
+        try {
+          // Fetch data
+          const [almocoResponse, lanchesResponse] = await Promise.all([
+            fetchData("Almoco"),
+            fetchData("Lanches"),
+          ]);
+
+          almocoData = almocoResponse;
+          lanchesData = lanchesResponse;
+
+          // Render content
+          renderAlmoco();
+          renderLanches();
+
+          // Show main content
+          document.getElementById("loadingState").style.display = "none";
+          document.getElementById("mainContent").classList.remove("hidden");
+
+          // Update last update time
+          document.getElementById("lastUpdate").textContent =
+            new Date().toLocaleTimeString("pt-BR");
+        } catch (error) {
+          console.error("Error initializing app:", error);
+          document.getElementById("loadingState").style.display = "none";
+          document.getElementById("errorState").classList.remove("hidden");
+        }
+      }
+
+      // Initialize app when DOM is ready
+      document.addEventListener("DOMContentLoaded", init);
+
+      // Auto-refresh every 30 minutes
+      setInterval(init, 30 * 60 * 1000);
+
+      // Event listeners
+      document.getElementById("datePicker").value = getTodayString();
+      document.getElementById("datePicker").addEventListener("change", (e) => {
+        selectedDate = e.target.value;
+        showWeek = false;
+        renderAlmoco();
+      });
+
+      document.getElementById("weekBtn").addEventListener("click", () => {
+        if (document.getElementById("datePicker").value) {
+          selectedDate = document.getElementById("datePicker").value;
+          showWeek = true;
+          renderAlmoco();
+        }
+      });
+    </script>
+  </body>
+</html>
