@@ -19,6 +19,14 @@
     <style>
       * {
         font-family: "Poppins", sans-serif;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        width: 100%;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
       }
 
       :root {
@@ -59,7 +67,8 @@
         height: 100px;
         background: var(--sesc-cream);
         border-radius: 0 0 50% 50%;
-        transform: scale(2, 1);
+        transform: scale(1.5, 1);
+        width: 100%;
       }
 
       .curved-bottom {
@@ -76,7 +85,8 @@
         height: 80px;
         background: var(--sesc-cream);
         border-radius: 50% 50% 0 0;
-        transform: scale(2, 1);
+        transform: scale(1.5, 1);
+        width: 100%;
       }
 
       .protein-card {
@@ -297,6 +307,11 @@
       @media (max-width: 768px) {
         .protein-img {
           height: 150px;
+        }
+        
+        .curved-section::before,
+        .curved-bottom::after {
+          transform: scale(2, 1);
         }
       }
 

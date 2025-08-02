@@ -17,11 +17,12 @@
 
       body {
         font-family: "Arial", sans-serif;
-        max-width: 1200px;
+        max-width: 100%;
         margin: 0 auto;
         background-color: #f5f5f5;
         color: #333;
         line-height: 1.6;
+        overflow-x: hidden;
       }
 
       /* Barra superior */
@@ -29,13 +30,7 @@
         background-color: #2c3e50;
         color: white;
         padding: 10px 0;
-        width: 100vw;
-        position: relative;
-        left: 50%;
-        right: 50%;
-        margin-left: -50vw;
-        margin-right: -50vw;
-        box-sizing: border-box;
+        width: 100%;
       }
 
       .top-bar-content {
@@ -72,6 +67,8 @@
       /* Conteúdo principal */
       .main-content {
         padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
       h1,
@@ -210,13 +207,7 @@
         padding: 15px 0;
         font-size: 14px;
         margin-top: 40px;
-        width: 100vw;
-        position: relative;
-        left: 50%;
-        right: 50%;
-        margin-left: -50vw;
-        margin-right: -50vw;
-        box-sizing: border-box;
+        width: 100%;
       }
 
       @media (max-width: 768px) {
@@ -334,7 +325,7 @@
         >
           <div class="modelo-card">
             <img src="imagens/modelo6.png" alt="Modelo 6" class="modelo-img" />
-            <div class="modelo-numero">Modelo 5</div>
+            <div class="modelo-numero">Modelo 6</div>
           </div>
         </a>
       </div>
